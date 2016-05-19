@@ -21,7 +21,6 @@ function createMarker(position, title, map) {
 	});
 }
 
-
 function getLocation() {
 	return new Promise(function (resolve, reject){
 		var currentLocation = {};
