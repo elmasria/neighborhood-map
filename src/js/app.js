@@ -1,25 +1,5 @@
-function initMap(lat, lng) {
-	var map;
-	map = new google.maps.Map(document.getElementById('map'), {
-		center: {lng: lng , lat: lat},
-		zoom: 15,
-		// customize controls
-		mapTypeControl: false,
-		panControl: false,
-		streetViewControl: false,
-		zoomControl: false
-	});
-
-	createMarker({lng: lng , lat: lat}, 'hello World', map);
-}
-
-function createMarker(position, title, map) {
-	var marker = new google.maps.Marker({
-		position: position,
-		title: title,
-		map: map
-	});
-}
+var foursquareClientID = '&oauth_token=CRE2N2IININ300LAW02N4R5BCL3NP1X1A14JERVXK3B4KUBN&v=20151229';
+var foursquareUrl = 'https://api.foursquare.com/v2/venues/search?ll=';
 
 function getLocation() {
 	return new Promise(function (resolve, reject){
@@ -56,20 +36,198 @@ function getLocation() {
 		}
 	});
 }
-function getLLL (){
+
+function getLocationSync() {
+	var currentLocation = {};
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function showPosition(position) {
+			currentLocation.currentPositionLatitude =  position.coords.latitude;
+			currentLocation.currentPositionLongitude = position.coords.longitude;
+		}, function showError(error) {
+			switch(error.code) {
+				case error.PERMISSION_DENIED:
+				currentLocation.error=  "User denied the request for Geo-location."
+				break;
+				case error.POSITION_UNAVAILABLE:
+				currentLocation.error= "Location information is unavailable."
+				break;
+				case error.TIMEOUT:
+				reject(currentLocation);
+				currentLocation.error= "The request to get user location timed out."
+				break;
+				case error.UNKNOWN_ERROR:
+				currentLocation.error= "An unknown error occurred."
+				break;
+			}
+		});
+
+	} else {
+		currentLocation.error = "Geo location is not supported by this browser.";
+	}
+	return currentLocation;
+}
+
+
+function AppViewModel() {
+	var controller = this,
+	mapCenter = {};
+	controller.allMArkers = ko.observableArray();
 	if(('Promise' in window)){
-		var lat, lng ;
 		getLocation().then(function(value){
-			lat = value.currentPositionLatitude;
-			lng = value.currentPositionLongitude;
-			console.log(lat, lng);
-			initMap(lat,lng);
+			mapCenter.lat = value.currentPositionLatitude;
+			mapCenter.lng = value.currentPositionLongitude;
+			createMap();
 		}).catch(function(error){
-			console.log(error.error);
-			lat= 33.8886;
-			lng= 35.4955;
-			initMap(lat,lng);
+			mapCenter.lat= 33.8886;
+			mapCenter.lng= 35.4955;
+			createMap();
 		});
 	}else{
+		if (getLocationSync.error === "") {
+			mapCenter.lat = getLocationSync.currentPositionLatitude;
+			mapCenter.lng = getLocationSync.currentPositionLongitude
+		}else{
+			mapCenter.lat= 33.8886;
+			mapCenter.lng= 35.4955;
+		}
+		createMap();
 	}
+
+	function createMap() {
+		var location = mapCenter.lat + "," + mapCenter.lng,
+		url = foursquareUrl + location  + foursquareClientID,
+		mp = new Map('map',
+			mapCenter,
+			18,
+			false,
+			false,
+			false,
+			false);
+
+		$.getJSON( url, function(data) {
+			console.log( data.response.venues);
+			var response = data.response.venues;
+			for(var i = 0; i < response.length ;i++){
+				var markerPosition = {};
+				markerPosition.lat = response[i].location.lat,
+				markerPosition.lng = response[i].location.lng,
+				summary = response[i].name;
+
+				var mrk = new Marker(markerPosition,
+					summary,
+					'google.maps.Animation.DROP',
+					mp.map,
+					'./images/beachflag.png',
+					{});
+				controller.allMArkers.push(mrk);
+				var li = $("<li></li>",{
+					text: summary
+				})
+				$('.filter-list-ul').append(li);
+			}
+		})
+		.fail(function(error) {
+			console.log( "error" );
+			var mrk = new Marker(mapCenter,
+				"Current Location",
+				'google.maps.Animation.DROP',
+				mp.map,
+				'./images/beachflag.png',
+				{});
+		})
+
+	}
+}
+
+
+// Map Class
+function Map(targetDiv, centrObj, zoom, mapTypeControl, panControl, streetViewControl, zoomControl) {
+	var self = this;
+	self.map;
+	self.center =  centrObj;
+	self.zoom= zoom;
+	self.mapTypeControl= mapTypeControl;
+	self.panControl= panControl;
+	self.streetViewControl= streetViewControl;
+	self.zoomControl= zoomControl;
+	self.targetDiv = targetDiv;
+
+	// generate map
+	self.createMap();
+}
+
+// Create map
+Map.prototype.createMap = function() {
+	var self = this;
+	self.map = new google.maps.Map(document.getElementById(self.targetDiv), {
+		center: self.center,
+		zoom: self.zoom,
+		mapTypeControl: self.mapTypeControl,
+		panControl: self.panControl,
+		streetViewControl: self.streetViewControl,
+		zoomControl: self.zoomControl
+	});
+};
+
+// Marker class
+function Marker(position, title, animation, map, icon, contentObj) {
+	var self = this;
+	self.position = position;
+	self.title = title;
+	self.animation = animation;
+	self.map = map;
+	self.icon = icon;
+	self.contentObj = contentObj;
+
+	// generate marker
+	self.createMarker();
+
+}
+
+// create marker
+Marker.prototype.createMarker = function createMarker() {
+	var self = this,
+	marker = new google.maps.Marker({
+		position: self.position,
+		title: self.title,
+		animation: self.animation,
+		map: self.map,
+		icon: self.icon,
+	});
+
+	marker.addListener('click', function(){
+		self.toggleBounce(marker)
+	});
+
+	self.generateInfoWindow(marker, map, self.contentObj);
+
+	return marker;
+}
+
+// set or remove animation
+Marker.prototype.toggleBounce = function (marker) {
+	if (marker.getAnimation() !== null) {
+		marker.setAnimation(null);
+	} else {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+	}
+}
+
+// generate info window
+Marker.prototype.generateInfoWindow = function(marker, map ,contentObj) {
+	var contentDiv = $('<div></div>',{
+		class: 'content-div'
+	});
+
+	var infowindow = new google.maps.InfoWindow({
+		content: contentDiv.title
+	});
+
+	marker.addListener('click', function() {
+		infowindow.open(map, marker);
+	});
+};
+
+function init() {
+	ko.applyBindings(new AppViewModel());
 }
