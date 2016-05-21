@@ -15,7 +15,7 @@ var clean = require('gulp-clean');
 var reload = browserSync.reload;
 
 
-gulp.task('default',['scripts','minify-html','minify-css','copy-font', 'server']);
+gulp.task('default',['scripts','minify-html','minify-css','copy-font', 'copy-images','server']);
 
 
 gulp.task('clean', function () {
@@ -33,19 +33,17 @@ gulp.task('minify-html', function() {
 
 gulp.task('scripts', function() {
 	return gulp.src(['./src/vendors/jquery/jquery-2.2.3.min.js',
-		'./src/vendors/bootstrap/js/bootstrap.min.js',
 		'./src/vendors/knockout/knockout-3.4.0.js',
 		'./src/js/app.js'])
 	.pipe(concat('app.min.js'))
 	.pipe(strip())
-	.pipe(uglify())
+	/*.pipe(uglify())*/
 	.pipe(gulp.dest('./dist/js'))
 	.pipe(reload({stream: true}));
 });
 
 gulp.task('minify-css', function () {
-	return gulp.src(['./src/vendors/bootstrap/css/bootstrap.min.css',
-		'./src/css/app.css'])
+	return gulp.src(['./src/css/app.css'])
 	.pipe(concat('app.min.css'))
 	.pipe(stripCssComments({preserve: false}))
 	.pipe(cleanCSS({compatibility: 'ie8'}))
@@ -57,6 +55,12 @@ gulp.task('minify-css', function () {
 gulp.task('copy-font', function(){
 	gulp.src('./src/vendors/bootstrap/fonts/*')
 	.pipe(gulp.dest('./dist/fonts'));
+});
+
+
+gulp.task('copy-images', function(){
+	gulp.src('./src/images/*')
+	.pipe(gulp.dest('./dist/images'));
 });
 
 gulp.task('server', function(){
