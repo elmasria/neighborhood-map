@@ -2,67 +2,67 @@
  	height: 100%;
  	margin: 0;
  	padding: 0;
-    background-color: #F0EDE5;
- }
+  background-color: #F0EDE5;
+}
 
- #map {
- 	height: 97%;
- 	width: calc(100% - 30%);
- }
+#map {
+  height: 97%;
+  width: calc(100% - 30%);
+}
 
- .filter-div{
- 	width:100%;
- 	position: fixed;
- 	top: 0;
- 	left: 0;
- 	z-index: 2;
- 	background-color: transparent;
- }
+.filter-div{
+  width:100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-color: transparent;
+}
 ::-webkit-input-placeholder {
-   color: #DA592A;
+ color: #DA592A;
 }
 
 :-moz-placeholder { /* Firefox 18- */
-   color: #DA592A;
+ color: #DA592A;
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-   color: #DA592A;
+ color: #DA592A;
 }
 
 :-ms-input-placeholder {
-   color: #DA592A;
+ color: #DA592A;
 }
 
- .txt-filter{
- 	width: 100%;
- 	padding: 12px 20px;
- 	margin: 0;
- 	box-sizing: border-box;
- 	font-size: 2em;
- 	border: 0;
- 	color: #DA592A;
- 	transition: all 1s ease-in-out;
- 	background-color: #F0EDE5;
- }
+.txt-filter{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 0;
+  box-sizing: border-box;
+  font-size: 2em;
+  border: 0;
+  color: #DA592A;
+  transition: all 1s ease-in-out;
+  background-color: #F0EDE5;
+}
 
- .txt-filter:focus{
- 	outline:0;
- 	border: 0;
- 	color: #FFDC21;
- 	background-color: transparent;
- 	font-size: 2.1em;
- }
+.txt-filter:focus{
+  outline:0;
+  border: 0;
+  color: #FFDC21;
+  background-color: transparent;
+  font-size: 2.1em;
+}
 .filter-list{
-    display: block;
-    position: fixed;
-    right: 0;
-    top: 60px;
-    z-index: 11;
-    width: 30%;
-    height: calc(97% - 60px);
-    background-color: #F0EDE5;
-    overflow-y: scroll;
+  display: block;
+  position: fixed;
+  right: 0;
+  top: 60px;
+  z-index: 11;
+  width: 30%;
+  height: calc(97% - 60px);
+  background-color: #F0EDE5;
+  overflow-y: scroll;
 }
 
 .filter-list-ul{
@@ -86,4 +86,28 @@
 
 .filter-list-a:hover {
   color: #DA592A;
+}
+
+@media only screen and (max-width: 500px) {
+   .filter-list{
+    width: 100%;
+    top: initial;
+    bottom: 0;
+    height: 120px;
+    border-bottom: 2px solid #DA592A;
+  }
+  #map {
+    width: 100%;
+  }
+
+  .filter-list-ul{
+    list-style: none;
+    padding: 0 0 0 10px;
+    margin-top: 0;
+    border: none;
+  }
+
+  .filter-list-li {
+  }
+
 }
