@@ -68,10 +68,17 @@ function getLocationSync() {
 }
 
 
+
 function AppViewModel() {
 	var controller = this,
 	mapCenter = {};
+	controller.filterText = ko.observable(""); 
 	controller.allMArkers = ko.observableArray();
+
+	controller.updateList = function () {
+		console.log(controller.filterText.value);
+	}
+
 	if(('Promise' in window)){
 		getLocation().then(function(value){
 			mapCenter.lat = value.currentPositionLatitude;
@@ -98,7 +105,7 @@ function AppViewModel() {
 		url = foursquareUrl + location  + foursquareClientID,
 		mp = new Map('map',
 			mapCenter,
-			18,
+			13,
 			false,
 			false,
 			false,
@@ -118,12 +125,8 @@ function AppViewModel() {
 					'google.maps.Animation.DROP',
 					mp.map,
 					'./images/beachflag.png',
-					{});
+					{title: summary});
 				controller.allMArkers.push(mrk);
-				var li = $("<li></li>",{
-					text: summary
-				})
-				$('.filter-list-ul').append(li);
 			}
 		})
 		.fail(function(error) {
@@ -199,8 +202,7 @@ Marker.prototype.createMarker = function createMarker() {
 		self.toggleBounce(marker)
 	});
 
-	self.generateInfoWindow(marker, map, self.contentObj);
-
+	self.generateInfoWindow(marker, self.map, self.contentObj);
 	return marker;
 }
 
@@ -216,11 +218,12 @@ Marker.prototype.toggleBounce = function (marker) {
 // generate info window
 Marker.prototype.generateInfoWindow = function(marker, map ,contentObj) {
 	var contentDiv = $('<div></div>',{
-		class: 'content-div'
+		class: 'content-div',
+		html: contentObj.title
 	});
 
 	var infowindow = new google.maps.InfoWindow({
-		content: contentDiv.title
+		content: contentDiv[0]
 	});
 
 	marker.addListener('click', function() {
