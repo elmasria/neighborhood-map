@@ -34,6 +34,8 @@ gulp.task('minify-html', function() {
 gulp.task('scripts', function() {
 	return gulp.src(['./src/vendors/jquery/jquery-2.2.3.min.js',
 		'./src/vendors/knockout/knockout-3.4.0.js',
+		'./src/js/Map.js',
+		'./src/js/Marker.js',
 		'./src/js/app.js'])
 	.pipe(concat('app.min.js'))
 	.pipe(strip())
