@@ -67,17 +67,39 @@ function getLocationSync() {
 	return currentLocation;
 }
 
-
+/* Checks if a substring `other` is found inside the string */
+String.prototype.contains = function(other) {
+	return this.indexOf(other) !== -1;
+};
 
 function AppViewModel() {
 	var controller = this,
 	mapCenter = {};
-	controller.filterText = ko.observable(""); 
-	controller.allMArkers = ko.observableArray();
+	controller.filterText = ko.observable('');
+	controller.allMArkers = ko.observableArray([]);
 
-	controller.updateList = function () {
-		console.log(controller.filterText.value);
+	controller.animateMarker = function(marker) {
+		marker.toggleBounce();
+		marker.openInfoWindow();
 	}
+
+	controller.filterMarkerList = ko.computed(function() {
+
+		controller.allMArkers().forEach(function(marker) {
+			marker.clearMarker();
+		});
+
+		// filter listResults where name contains `controller.allMArkers`
+		var listResults = ko.utils.arrayFilter(controller.allMArkers(), function(marker) {
+			return marker.title().toLowerCase().contains(controller.filterText().toLowerCase());
+		});
+
+		listResults.forEach(function(marker) {
+			marker.createMarker();
+		});
+
+		return listResults;
+	});
 
 	if(('Promise' in window)){
 		getLocation().then(function(value){
@@ -105,7 +127,7 @@ function AppViewModel() {
 		url = foursquareUrl + location  + foursquareClientID,
 		mp = new Map('map',
 			mapCenter,
-			13,
+			17,
 			false,
 			false,
 			false,
@@ -122,7 +144,6 @@ function AppViewModel() {
 
 				var mrk = new Marker(markerPosition,
 					summary,
-					'google.maps.Animation.DROP',
 					mp.map,
 					'./images/beachflag.png',
 					{title: summary});
@@ -133,103 +154,16 @@ function AppViewModel() {
 			console.log( "error" );
 			var mrk = new Marker(mapCenter,
 				"Current Location",
-				'google.maps.Animation.DROP',
 				mp.map,
 				'./images/beachflag.png',
 				{});
-		})
+		});
 
 	}
 }
 
 
-// Map Class
-function Map(targetDiv, centrObj, zoom, mapTypeControl, panControl, streetViewControl, zoomControl) {
-	var self = this;
-	self.map;
-	self.center =  centrObj;
-	self.zoom= zoom;
-	self.mapTypeControl= mapTypeControl;
-	self.panControl= panControl;
-	self.streetViewControl= streetViewControl;
-	self.zoomControl= zoomControl;
-	self.targetDiv = targetDiv;
 
-	// generate map
-	self.createMap();
-}
-
-// Create map
-Map.prototype.createMap = function() {
-	var self = this;
-	self.map = new google.maps.Map(document.getElementById(self.targetDiv), {
-		center: self.center,
-		zoom: self.zoom,
-		mapTypeControl: self.mapTypeControl,
-		panControl: self.panControl,
-		streetViewControl: self.streetViewControl,
-		zoomControl: self.zoomControl
-	});
-};
-
-// Marker class
-function Marker(position, title, animation, map, icon, contentObj) {
-	var self = this;
-	self.position = position;
-	self.title = title;
-	self.animation = animation;
-	self.map = map;
-	self.icon = icon;
-	self.contentObj = contentObj;
-
-	// generate marker
-	self.createMarker();
-
-}
-
-// create marker
-Marker.prototype.createMarker = function createMarker() {
-	var self = this,
-	marker = new google.maps.Marker({
-		position: self.position,
-		title: self.title,
-		animation: self.animation,
-		map: self.map,
-		icon: self.icon,
-	});
-
-	marker.addListener('click', function(){
-		self.toggleBounce(marker)
-	});
-
-	self.generateInfoWindow(marker, self.map, self.contentObj);
-	return marker;
-}
-
-// set or remove animation
-Marker.prototype.toggleBounce = function (marker) {
-	if (marker.getAnimation() !== null) {
-		marker.setAnimation(null);
-	} else {
-		marker.setAnimation(google.maps.Animation.BOUNCE);
-	}
-}
-
-// generate info window
-Marker.prototype.generateInfoWindow = function(marker, map ,contentObj) {
-	var contentDiv = $('<div></div>',{
-		class: 'content-div',
-		html: contentObj.title
-	});
-
-	var infowindow = new google.maps.InfoWindow({
-		content: contentDiv[0]
-	});
-
-	marker.addListener('click', function() {
-		infowindow.open(map, marker);
-	});
-};
 
 function init() {
 	ko.applyBindings(new AppViewModel());

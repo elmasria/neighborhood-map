@@ -13,11 +13,11 @@
 	</head>
 	<body>
 	<div class="filter-div">
-		<input id="marker-filter" data-bind="textInput: filterText, event: { keypress: updateList}" type="text" class="txt-filter" placeholder="Filter the list...">
+		<input id="marker-filter" data-bind="textInput: filterText" type="text" class="txt-filter" placeholder="Filter the list...">
 	</div>
 	<aside class="filter-list">
-		<ul class="filter-list-ul" data-bind="foreach: allMArkers">
-			<li  data-bind="text: title"></li>
+		<ul class="filter-list-ul" data-bind="foreach: {data: filterMarkerList, as: 'marker'}">
+			<li  ><a href="#" data-bind="text: marker.title, click: $parent.animateMarker"></a></li>
 		</ul>
 	</aside>
 	<div id="map" ></div>
