@@ -64,3 +64,26 @@
     background-color: #F0EDE5;
     overflow-y: scroll;
 }
+
+.filter-list-ul{
+  list-style: none;
+  padding: 0 0 0 10px;
+  margin-top: 0;
+  border-left: 2px solid #DA592A;
+}
+
+.filter-list-li {
+  line-height: 1.5em;
+}
+
+.filter-list-a{
+
+  color: #000;
+  text-decoration: none;
+  transition: all 0.4s ease-in-out;
+}
+
+
+.filter-list-a:hover {
+  color: #DA592A;
+}
