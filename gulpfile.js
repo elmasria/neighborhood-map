@@ -39,7 +39,7 @@ gulp.task('scripts', function() {
 		'./src/js/app.js'])
 	.pipe(concat('app.min.js'))
 	.pipe(strip())
-	/*.pipe(uglify())*/
+	.pipe(uglify())
 	.pipe(gulp.dest('./dist/js'))
 	.pipe(reload({stream: true}));
 });
