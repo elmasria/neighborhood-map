@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Neighborhood Map</title>
-		<link href="css/app.min.css" rel="stylesheet">
-	</head>
-	<body>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Neighborhood Map</title>
+	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+	<link href="css/app.min.css" rel="stylesheet">
+</head>
+<body>
 	<div class="filter-div">
 		<input id="marker-filter" data-bind="textInput: filterText" type="text" class="txt-filter" placeholder="Filter the list...">
 	</div>
@@ -20,6 +21,6 @@
 	<span class="third-party-provider">Location details are provided by Foursquare</span>
 	<script src="js/app.min.js"></script>
 	<!-- Google Map -->
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfMWXcaUvvCPD6Uw3sZbWC4T6axuwVmU8&libraries=places&callback=init" async defer></script>
-	</body>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfMWXcaUvvCPD6Uw3sZbWC4T6axuwVmU8&libraries=places&callback=init" onerror="ErrorHandling()"  async defer></script>
+</body>
 </html>

@@ -14,7 +14,7 @@ var Marker = function (position, title, map, icon, contentObj) {
 	// generate marker
 	self.createMarker();
 
-}
+};
 
 // create marker
 Marker.prototype.createMarker = function createMarker() {
@@ -33,67 +33,39 @@ Marker.prototype.createMarker = function createMarker() {
 
 	self.generateInfoWindow(self.contentObj());
 	return self.marker;
-}
+};
 
 // set or remove animation
 Marker.prototype.toggleBounce = function () {
 	var self= this;
-	if (self.marker.getAnimation() !== null) {
-		self.marker.setAnimation(null);
-	} else {
-		self.marker.setAnimation(google.maps.Animation.BOUNCE);
-	}
-}
+
+	app.getMarkerList().forEach(function(markerc) {
+		if (self.marker != markerc.marker) {
+			markerc.marker.setAnimation(null);
+		}
+	});
+
+	self.marker.getAnimation() !== null ? self.marker.setAnimation(null):self.marker.setAnimation(google.maps.Animation.BOUNCE);
+
+};
 
 // generate info window
 Marker.prototype.generateInfoWindow = function(contentObj) {
 	var self= this,
-	contentDiv = $('<div></div>',{
-		class: 'content-div'
-	}),
-	titleHeader = $('<h4></h4>',{
-		class: 'title-header',
-		html: contentObj.title
-	}),
-	bodyDiv = $('<div></div>', {
-		class: 'body-div'
-	})
-	addressDiv = $('<div></div>', {
-		class: 'element-div',
-		html: '<span>Address: </span>' + contentObj.address
-	}),
-	categoryDiv = $('<div></div>', {
-		class: 'element-div',
-		html: '<span>Category: </span>' + contentObj.category
-	}),
-	checkinsCountsDiv = $('<div></div>', {
-		class: 'element-div',
-		html: '<span>Checkin #: </span>' + contentObj.checkinsCount
-	}),
-	summaryDiv = $('<div></div>', {
-		class: 'element-div',
-		html:  contentObj.summary
-	}),
 	linkUrl = contentObj.url || '#',
 	linkShow = contentObj.url || 'N/A',
-	urlDiv = $('<div></div>', {
-		class: 'element-div',
-		html: '<span>Link: </span><a target="_blank" href="'+ linkUrl +'">' + linkShow + '</a>'
-	});
-
-	bodyDiv.append(addressDiv);
-	bodyDiv.append(categoryDiv);
-	bodyDiv.append(checkinsCountsDiv);
-	bodyDiv.append(summaryDiv);
-	bodyDiv.append(urlDiv);
-
-	contentDiv.append(titleHeader);
-	contentDiv.append(bodyDiv);
-
-	self.infowindow = new google.maps.InfoWindow({
-		content: contentDiv[0]
-	});
-
+	contentDiv = '<div class="content-div">' +
+					'<h4 class="title-header">'+contentObj.title+'</h4>' +
+					'<div class="body-div">' +
+						'<div class="element-div"><span>Address: </span>'+contentObj.address+'</div>' +
+						'<div class="element-div"><span>Category: </span>'+contentObj.category+'</div>' +
+						'<div class="element-div"><span>Checkin #: </span>'+contentObj.checkinsCount+'</div>' +
+						'<div class="element-div"><span>' +contentObj.summary + '</span></div>' +
+						'<div class="element-div"><span>Link: </span><a target="_blank" href="'+ linkUrl +'">' + linkShow + '</a></div>' +
+					'</div>' +
+				'</div>';
+	self.infowindow = new google.maps.InfoWindow();
+	self.infowindow.setContent(contentDiv);
 	self.marker.addListener('click', function() {
 		self.openInfoWindow();
 	});
@@ -101,11 +73,22 @@ Marker.prototype.generateInfoWindow = function(contentObj) {
 
 Marker.prototype.openInfoWindow = function() {
 	var self = this;
+	app.getMarkerList().forEach(function(markerc) {
+		if (self.marker != markerc.marker) {
+			markerc.infowindow.close();
+		}
+	});
 	self.infowindow.open(self.map(), self.marker);
 };
 
 // clear Marker
 Marker.prototype.clearMarker = function() {
 	var self = this;
-	self.marker.setMap(null);
+	self.marker.setVisible(false); //setMap(null);
+};
+
+// show marker
+Marker.prototype.showMarker = function() {
+	var self = this;
+	self.marker.setVisible(true);
 };

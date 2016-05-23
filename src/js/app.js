@@ -1,5 +1,5 @@
 var foursquareClientID = '&oauth_token=CRE2N2IININ300LAW02N4R5BCL3NP1X1A14JERVXK3B4KUBN&v=20151229',
-	foursquareUrl = 'https://api.foursquare.com/v2/venues/search?ll=';
+foursquareUrl = 'https://api.foursquare.com/v2/venues/search?ll=';
 
 function getLocation() {
 	return new Promise(function (resolve, reject){
@@ -12,20 +12,20 @@ function getLocation() {
 			}, function showError(error) {
 				switch(error.code) {
 					case error.PERMISSION_DENIED:
-					currentLocation.error=  "User denied the request for Geo-location."
+					currentLocation.error=  "User denied the request for Geo-location.";
 					reject(currentLocation);
 					break;
 					case error.POSITION_UNAVAILABLE:
-					currentLocation.error= "Location information is unavailable."
+					currentLocation.error= "Location information is unavailable.";
 					reject(currentLocation);
 					break;
 					case error.TIMEOUT:
 					reject(currentLocation);
-					currentLocation.error= "The request to get user location timed out."
+					currentLocation.error= "The request to get user location timed out.";
 					reject(currentLocation);
 					break;
 					case error.UNKNOWN_ERROR:
-					currentLocation.error= "An unknown error occurred."
+					currentLocation.error= "An unknown error occurred.";
 					reject(currentLocation);
 					break;
 				}
@@ -46,17 +46,17 @@ function getLocationSync() {
 		}, function showError(error) {
 			switch(error.code) {
 				case error.PERMISSION_DENIED:
-				currentLocation.error=  "User denied the request for Geo-location."
+				currentLocation.error=  "User denied the request for Geo-location.";
 				break;
 				case error.POSITION_UNAVAILABLE:
-				currentLocation.error= "Location information is unavailable."
+				currentLocation.error= "Location information is unavailable.";
 				break;
 				case error.TIMEOUT:
 				reject(currentLocation);
-				currentLocation.error= "The request to get user location timed out."
+				currentLocation.error= "The request to get user location timed out.";
 				break;
 				case error.UNKNOWN_ERROR:
-				currentLocation.error= "An unknown error occurred."
+				currentLocation.error= "An unknown error occurred.";
 				break;
 			}
 		});
@@ -72,6 +72,7 @@ String.prototype.contains = function(other) {
 	return this.indexOf(other) !== -1;
 };
 
+
 function AppViewModel() {
 	var controller = this,
 	mapCenter = {};
@@ -82,7 +83,7 @@ function AppViewModel() {
 	controller.animateMarker = function(marker) {
 		marker.toggleBounce();
 		marker.openInfoWindow();
-	}
+	};
 
 	// filter Listview and Map according to the input
 	controller.filterMarkerList = ko.computed(function() {
@@ -97,7 +98,7 @@ function AppViewModel() {
 		});
 
 		listResults.forEach(function(marker) {
-			marker.createMarker();
+			marker.showMarker();
 		});
 
 		return listResults;
@@ -113,6 +114,7 @@ function AppViewModel() {
 		}).catch(function(error){
 			// Promise error
 			// Assign default location
+			alert(error.error);
 			mapCenter.lat= 33.8886;
 			mapCenter.lng= 35.4955;
 			createMap();
@@ -122,9 +124,10 @@ function AppViewModel() {
 		if (getLocationSync.error === "") {
 			// No error with Geolocation
 			mapCenter.lat = getLocationSync.currentPositionLatitude;
-			mapCenter.lng = getLocationSync.currentPositionLongitude
+			mapCenter.lng = getLocationSync.currentPositionLongitude;
 		}else{
 			// error with Geolocation set default value
+			alert(error.error);
 			mapCenter.lat= 33.8886;
 			mapCenter.lng= 35.4955;
 		}
@@ -143,16 +146,15 @@ function AppViewModel() {
 			false);
 
 		$.getJSON( url, function(data) {
-			console.log( data.response.venues);
 			var response = data.response.venues;
 			for(var i = 0; i < response.length ;i++){
 				var markerPosition = {};
-				markerPosition.lat = response[i].location.lat,
-				markerPosition.lng = response[i].location.lng,
-				summary = response[i].hereNow.summary,
+				markerPosition.lat = response[i].location.lat;
+				markerPosition.lng = response[i].location.lng;
+				var summary = response[i].hereNow.summary,
 				locationName = response[i].name,
 				locationUrl = response[i].url,
-				formattedAddress = response[i].location.formattedAddress ? response[i].location.formattedAddress.join(', ') : 'N/A',
+				formattedAddress = response[i].location.formattedAddress ? response[i].location.formattedAddress.join(', ') : 'N/A';
 				locationAddress = formattedAddress,
 				addressCategory = response[i].categories[0] ? response[i].categories[0].shortName : 'N/A'
 				locationCategory = addressCategory,
@@ -174,8 +176,7 @@ function AppViewModel() {
 			}
 		})
 		.fail(function(error) {
-			console.log( "error" );
-			alert("API Error");
+			alert("Foursquare API Connection Problem");
 			var mrk = new Marker(mapCenter,
 				"default 1 Location",
 				mp.map,
@@ -247,6 +248,18 @@ function AppViewModel() {
 	}
 }
 
+AppViewModel.prototype.getMarkerList = function () {
+	var controller = this;
+	return controller.allMArkers();
+}
+
+var app ;
+
 function init() {
-	ko.applyBindings(new AppViewModel());
+	app = new AppViewModel();
+	ko.applyBindings(app);
+}
+
+function ErrorHandling () {
+	alert('Sorry it seems that there are Some problem with Google API, Please check your network');
 }
