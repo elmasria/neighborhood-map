@@ -13,7 +13,7 @@ var Map = function (targetDiv, centrObj, zoom, mapTypeControl, panControl, stree
 
 	// generate map
 	self.createMap();
-}
+};
 
 // Create map
 Map.prototype.createMap = function() {
