@@ -52,7 +52,7 @@ html, body {
 .txt-filter:focus {
 	outline: 0;
 	border: 0;
-	color: #FFDC21;
+	color: #337BCB;
 	background-color: transparent;
 	font-size: 2.1em;
 }
