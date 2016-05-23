@@ -16,6 +16,6 @@ This is a project for the Udacity front end nanodegree. It is a neighborhood map
 3. Open browser http://localhost:8080/
 
 
-### Reference
+### References
  1. Google Maps APIs: [https://developers.google.com/maps/](https://developers.google.com/maps/)
  2. Foursquare API: [https://developer.foursquare.com/](https://developer.foursquare.com/)
