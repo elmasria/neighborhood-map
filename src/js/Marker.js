@@ -48,17 +48,54 @@ Marker.prototype.toggleBounce = function () {
 // generate info window
 Marker.prototype.generateInfoWindow = function(contentObj) {
 	var self= this,
-		contentDiv = $('<div></div>',{
-		class: 'content-div',
+	contentDiv = $('<div></div>',{
+		class: 'content-div'
+	}),
+	titleHeader = $('<h4></h4>',{
+		class: 'title-header',
 		html: contentObj.title
+	}),
+	bodyDiv = $('<div></div>', {
+		class: 'body-div'
+	})
+	addressDiv = $('<div></div>', {
+		class: 'element-div',
+		html: '<span>Address: </span>' + contentObj.address
+	}),
+	categoryDiv = $('<div></div>', {
+		class: 'element-div',
+		html: '<span>Category: </span>' + contentObj.category
+	}),
+	checkinsCountsDiv = $('<div></div>', {
+		class: 'element-div',
+		html: '<span>Checkin #: </span>' + contentObj.checkinsCount
+	}),
+	summaryDiv = $('<div></div>', {
+		class: 'element-div',
+		html:  contentObj.summary
+	}),
+	linkUrl = contentObj.url || '#',
+	linkShow = contentObj.url || 'N/A',
+	urlDiv = $('<div></div>', {
+		class: 'element-div',
+		html: '<span>Link: </span><a target="_blank" href="'+ linkUrl +'">' + linkShow + '</a>'
 	});
+
+	bodyDiv.append(addressDiv);
+	bodyDiv.append(categoryDiv);
+	bodyDiv.append(checkinsCountsDiv);
+	bodyDiv.append(summaryDiv);
+	bodyDiv.append(urlDiv);
+
+	contentDiv.append(titleHeader);
+	contentDiv.append(bodyDiv);
 
 	self.infowindow = new google.maps.InfoWindow({
 		content: contentDiv[0]
 	});
 
 	self.marker.addListener('click', function() {
-		self.infowindow.open(self.map(), self.marker);
+		self.openInfoWindow();
 	});
 };
 
